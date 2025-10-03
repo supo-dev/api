@@ -51,3 +51,28 @@ it('may return empty collection when user follows no one', function (): void {
 
     expect($posts)->toHaveCount(0);
 });
+
+it('may not return posts from users blocked by the user', function (): void {
+    $user = User::factory()->create();
+    $blockedUser = User::factory()->create();
+    $followedUser = User::factory()->create();
+
+    app(App\Actions\FollowUser::class)->handle($user, $followedUser);
+    app(App\Actions\FollowUser::class)->handle($user, $blockedUser);
+    app(App\Actions\BlockUser::class)->handle($user, $blockedUser);
+
+    $followedPost = Post::factory()->create([
+        'user_id' => $followedUser->id,
+    ]);
+    $blockedPost = Post::factory()->create([
+        'user_id' => $blockedUser->id,
+    ]);
+
+    $followingFeed = new FollowingFeedQuery($user);
+    $posts = $followingFeed->builder()->get();
+    expect($posts)->toHaveCount(1);
+    $firstPost = $posts->first();
+    expect($firstPost->id)->toBe($followedPost->id);
+    expect($firstPost->id)->not()->toBe($blockedPost->id);
+
+});

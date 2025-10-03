@@ -43,6 +43,10 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::post('/follows/{user}', [FollowController::class, 'store'])->name('follows.store');
     Route::delete('/follows/{user}', [FollowController::class, 'destroy'])->name('follows.destroy');
 
+    // Blocks
+    Route::post('/blocks/{user}', [App\Http\Controllers\BlockController::class, 'store'])->name('blocks.store');
+    Route::delete('/blocks/{user}', [App\Http\Controllers\BlockController::class, 'destroy'])->name('blocks.destroy');
+
     // Likes...
     Route::post('/likes/{post}', [LikeController::class, 'store'])->name('likes.store');
     Route::delete('/likes/{post}', [LikeController::class, 'destroy'])->name('likes.destroy');

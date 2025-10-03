@@ -79,4 +79,20 @@ final class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(self::class, 'followers', 'follower_id', 'user_id');
     }
+
+    /**
+     * @return HasMany<BlockedUser, $this>
+     */
+    public function blockedUsers(): HasMany
+    {
+        return $this->hasMany(BlockedUser::class, 'user_id');
+    }
+
+    /**
+     * @return HasMany<BlockedUser, $this>
+     */
+    public function blockedByUsers(): HasMany
+    {
+        return $this->hasMany(BlockedUser::class, 'blocked_user_id');
+    }
 }

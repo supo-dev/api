@@ -16,17 +16,30 @@ use Illuminate\Http\Response;
 
 final readonly class UserController
 {
+    /**
+     * Provide a JSON representation of a user including relationship counts.
+     *
+     * The response payload contains the user's id, username, email, a boolean
+     * `email_verified` flag (true if `email_verified_at` is not null),
+     * `created_at` as an ISO 8601 string, and preloaded counts for `posts`,
+     * `followers`, and `following`.
+     *
+     * @param User $user The user model to present (counts for posts, followers, and following are preloaded).
+     * @return JsonResponse JSON object with keys: `id`, `username`, `email`, `email_verified`, `created_at`, `posts_count`, `followers_count`, and `following_count`.
+     */
     public function show(User $user): JsonResponse
     {
+        $user->loadCount(['posts', 'followers', 'following']);
+
         return response()->json([
             'id' => $user->id,
             'username' => $user->username,
             'email' => $user->email,
             'email_verified' => $user->email_verified_at !== null,
             'created_at' => $user->created_at->toISOString(),
-            'posts_count' => $user->posts()->count(),
-            'followers_count' => $user->followers()->count(),
-            'following_count' => $user->following()->count(),
+            'posts_count' => $user->posts_count,
+            'followers_count' => $user->followers_count,
+            'following_count' => $user->following_count,
         ]);
     }
 

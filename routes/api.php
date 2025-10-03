@@ -6,6 +6,7 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\FollowingFeedController;
 use App\Http\Controllers\ForYouFeedController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 
 // Sessions...
 Route::post('/sessions', [SessionController::class, 'store'])->name('sessions.store');
+
+// Password Reset...
+Route::post('/password/email', [PasswordResetController::class, 'store'])->name('password.email');
+Route::put('/password/reset', [PasswordResetController::class, 'update'])->name('password.reset');
 
 // Users...
 Route::post('/users', [UserController::class, 'store'])->name('users.store');

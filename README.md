@@ -31,6 +31,10 @@
 - [POST] **/sessions - Login** DONE
 - [DELETE] **/sessions - Logout** DONE
 
+### Password Reset
+- [POST] **/password/email - Request Password Reset** DONE
+- [PUT] **/password/reset - Reset Password with Token** DONE
+
 ### Profile Management
 
 - [GET] **/users/{user_id} - Get User Profile by Username** DONE

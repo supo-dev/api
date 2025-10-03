@@ -18,15 +18,17 @@ final readonly class UserController
 {
     public function show(User $user): JsonResponse
     {
+        $user->loadCount(['posts', 'followers', 'following']);
+
         return response()->json([
             'id' => $user->id,
             'username' => $user->username,
             'email' => $user->email,
             'email_verified' => $user->email_verified_at !== null,
             'created_at' => $user->created_at->toISOString(),
-            'posts_count' => $user->posts()->count(),
-            'followers_count' => $user->followers()->count(),
-            'following_count' => $user->following()->count(),
+            'posts_count' => $user->posts_count,
+            'followers_count' => $user->followers_count,
+            'following_count' => $user->following_count,
         ]);
     }
 

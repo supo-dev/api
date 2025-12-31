@@ -292,12 +292,12 @@ final class InlineFormHandler
                     $paddedLine = $this->addCursorToLine($paddedLine, $lines, $lineIndex, $boxWidth - 2);
                 }
 
-                $html .= '<div class="'.$borderColor.'">│ <span class="'.$textColor.'">'.$paddedLine.'</span> │</div>';
+                $html .= '<div class="'.$borderColor.'">│<span class="'.$textColor.'">'.$paddedLine.'</span>│</div>';
             }
 
             // Fill remaining lines if less than 4
             for ($i = count($visibleLines); $i < 4; $i++) {
-                $html .= '<div class="'.$borderColor.'">│ '.str_repeat(' ', $boxWidth - 2).' │</div>';
+                $html .= '<div class="'.$borderColor.'">│'.str_repeat(' ', $boxWidth).'│</div>';
             }
         } else {
             // Single-line text field
@@ -307,7 +307,7 @@ final class InlineFormHandler
                 $paddedLine = $this->addCursorToSingleLine($field['value'], $boxWidth - 2, $field['placeholder']);
             }
 
-            $html .= '<div class="'.$borderColor.'">│ <span class="'.$textColor.'">'.$paddedLine.'</span> │</div>';
+            $html .= '<div class="'.$borderColor.'">│<span class="'.$textColor.'">'.$paddedLine.'</span>│</div>';
         }
 
         // Bottom border
@@ -331,11 +331,12 @@ final class InlineFormHandler
         // Remove any newlines for display in single line context
         $text = str_replace("\n", ' ', $text);
 
-        if (mb_strlen($text) > $width) {
-            return mb_substr($text, 0, $width - 3).'...';
+        // Add single space padding on each side
+        if (mb_strlen($text) > $width - 2) {
+            return ' '.mb_substr($text, 0, $width - 5).'... ';
         }
 
-        return mb_str_pad($text, $width);
+        return ' '.mb_str_pad($text, $width - 2).' ';
     }
 
     private function addCursorToSingleLine(string $value, int $width, string $placeholder): string

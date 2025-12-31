@@ -327,7 +327,7 @@ final class InlineFormHandler
         }
 
         // Pad with spaces and add space on both sides
-        $padded = str_pad($text, $width - 2, ' ');
+        $padded = mb_str_pad($text, $width - 2, ' ');
 
         return ' '.$padded.' ';
     }

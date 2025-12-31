@@ -326,7 +326,10 @@ final class InlineFormHandler
             return ' '.mb_substr($text, 0, $width - 5).'... ';
         }
 
-        return ' '.mb_str_pad($text, $width - 2).' ';
+        // Pad with spaces and add space on both sides
+        $padded = str_pad($text, $width - 2, ' ');
+
+        return ' '.$padded.' ';
     }
 
     private function addCursorToSingleLine(string $value, int $width, string $placeholder): string

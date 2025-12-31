@@ -92,15 +92,13 @@ final class InlineFormHandler
                     if ($this->fields[$this->focusedFieldIndex]['multiline']) {
                         // For multiline, Enter adds a newline
                         $this->insertCharacter("\n");
-                    } else {
+                    } elseif ($this->focusedFieldIndex < count($this->fields) - 1) {
                         // For single line, move to next field or submit
-                        if ($this->focusedFieldIndex < count($this->fields) - 1) {
-                            $this->focusedFieldIndex++;
-                            $this->cursorPosition = mb_strlen($this->fields[$this->focusedFieldIndex]['value']);
-                        } else {
-                            // Submit the form
-                            break;
-                        }
+                        $this->focusedFieldIndex++;
+                        $this->cursorPosition = mb_strlen($this->fields[$this->focusedFieldIndex]['value']);
+                    } else {
+                        // Submit the form
+                        break;
                     }
 
                     continue;
@@ -123,12 +121,10 @@ final class InlineFormHandler
                 if ($input === "\e[A") { // Up arrow
                     if ($this->fields[$this->focusedFieldIndex]['multiline']) {
                         $this->moveCursorUpInMultiline();
-                    } else {
+                    } elseif ($this->focusedFieldIndex > 0) {
                         // Move to previous field
-                        if ($this->focusedFieldIndex > 0) {
-                            $this->focusedFieldIndex--;
-                            $this->cursorPosition = mb_strlen($this->fields[$this->focusedFieldIndex]['value']);
-                        }
+                        $this->focusedFieldIndex--;
+                        $this->cursorPosition = mb_strlen($this->fields[$this->focusedFieldIndex]['value']);
                     }
 
                     continue;
@@ -137,12 +133,10 @@ final class InlineFormHandler
                 if ($input === "\e[B") { // Down arrow
                     if ($this->fields[$this->focusedFieldIndex]['multiline']) {
                         $this->moveCursorDownInMultiline();
-                    } else {
+                    } elseif ($this->focusedFieldIndex < count($this->fields) - 1) {
                         // Move to next field
-                        if ($this->focusedFieldIndex < count($this->fields) - 1) {
-                            $this->focusedFieldIndex++;
-                            $this->cursorPosition = mb_strlen($this->fields[$this->focusedFieldIndex]['value']);
-                        }
+                        $this->focusedFieldIndex++;
+                        $this->cursorPosition = mb_strlen($this->fields[$this->focusedFieldIndex]['value']);
                     }
 
                     continue;
@@ -252,9 +246,7 @@ final class InlineFormHandler
         $html .= '<span>powered by supo ◉</span>';
         $html .= '</div>';
 
-        $html .= '</div>';
-
-        return $html;
+        return $html.'</div>';
     }
 
     /**
@@ -321,9 +313,7 @@ final class InlineFormHandler
             $html .= '<div class="'.$countColor.'">'.$currentLength.'/'.$maxLength.' characters</div>';
         }
 
-        $html .= '<div class="mt-1"></div>';
-
-        return $html;
+        return $html.'<div class="mt-1"></div>';
     }
 
     private function padAndTruncate(string $text, int $width): string
@@ -341,7 +331,7 @@ final class InlineFormHandler
 
     private function addCursorToSingleLine(string $value, int $width, string $placeholder): string
     {
-        $displayValue = $value !== '' ? $value : '';
+        $displayValue = $value;
 
         // Insert cursor character at position
         $before = mb_substr($displayValue, 0, $this->cursorPosition);

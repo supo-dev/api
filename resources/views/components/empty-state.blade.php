@@ -1,52 +1,34 @@
 @props(['title' => 'No posts yet', 'message' => 'Start sharing your thoughts', 'action' => null])
 
 @php
-    // Calculate dynamic width based on content
-    $titleLen = mb_strlen($title);
-    $messageLen = mb_strlen($message);
-    $contentWidth = max($titleLen, $messageLen) + 8; // padding on sides
-    $boxWidth = max(35, min($contentWidth, 50)); // min 35, max 50
-    $innerWidth = $boxWidth - 2; // account for border chars
+    $width = 40;
+    $pad = function($text, $len) use ($width) {
+        $padding = $width - $len;
+        $left = (int) floor($padding / 2);
+        $right = $padding - $left;
+        return str_repeat("\u{00A0}", $left) . $text . str_repeat("\u{00A0}", $right);
+    };
     
-    // Center the content
-    $titlePadLeft = (int) floor(($innerWidth - $titleLen) / 2);
-    $titlePadRight = $innerWidth - $titleLen - $titlePadLeft;
-    $msgPadLeft = (int) floor(($innerWidth - $messageLen) / 2);
-    $msgPadRight = $innerWidth - $messageLen - $msgPadLeft;
+    $titleLine = $pad($title, mb_strlen($title));
+    $msgLine = $pad($message, mb_strlen($message));
+    $emptyLine = str_repeat("\u{00A0}", $width);
 @endphp
 
 <div class="flex justify-center mt-4">
-    <div class="text-center">
-        {{-- Top border with rounded corners --}}
-        <div class="text-cyan">╭{{ str_repeat('─', $innerWidth) }}╮</div>
-        
-        {{-- Empty line --}}
-        <div><span class="text-cyan">│</span>{{ str_repeat(' ', $innerWidth) }}<span class="text-cyan">│</span></div>
-        
-        {{-- Title --}}
-        <div><span class="text-cyan">│</span>{{ str_repeat(' ', $titlePadLeft) }}<span class="text-cyan font-bold">{{ $title }}</span>{{ str_repeat(' ', $titlePadRight) }}<span class="text-cyan">│</span></div>
-        
-        {{-- Empty line --}}
-        <div><span class="text-cyan">│</span>{{ str_repeat(' ', $innerWidth) }}<span class="text-cyan">│</span></div>
-        
-        {{-- Message --}}
-        <div><span class="text-cyan">│</span>{{ str_repeat(' ', $msgPadLeft) }}<span class="text-white">{{ $message }}</span>{{ str_repeat(' ', $msgPadRight) }}<span class="text-cyan">│</span></div>
-        
-        {{-- Empty line --}}
-        <div><span class="text-cyan">│</span>{{ str_repeat(' ', $innerWidth) }}<span class="text-cyan">│</span></div>
-        
-        {{-- Action hint if provided --}}
+    <div>
+        <div class="text-cyan">╭{{ str_repeat('─', $width) }}╮</div>
+        <div class="text-cyan">│<span class="text-cyan">{{ $emptyLine }}</span>│</div>
+        <div class="text-cyan">│<span class="text-cyan font-bold">{{ $titleLine }}</span>│</div>
+        <div class="text-cyan">│<span class="text-cyan">{{ $emptyLine }}</span>│</div>
+        <div class="text-cyan">│<span class="text-white">{{ $msgLine }}</span>│</div>
+        <div class="text-cyan">│<span class="text-cyan">{{ $emptyLine }}</span>│</div>
         @if($action)
             @php
-                $actionLen = mb_strlen($action);
-                $actionPadLeft = (int) floor(($innerWidth - $actionLen) / 2);
-                $actionPadRight = $innerWidth - $actionLen - $actionPadLeft;
+                $actionLine = $pad($action, mb_strlen($action));
             @endphp
-            <div><span class="text-cyan">│</span>{{ str_repeat(' ', $actionPadLeft) }}<span class="text-gray">{{ $action }}</span>{{ str_repeat(' ', $actionPadRight) }}<span class="text-cyan">│</span></div>
-            <div><span class="text-cyan">│</span>{{ str_repeat(' ', $innerWidth) }}<span class="text-cyan">│</span></div>
+            <div class="text-cyan">│<span class="text-gray">{{ $actionLine }}</span>│</div>
+            <div class="text-cyan">│<span class="text-cyan">{{ $emptyLine }}</span>│</div>
         @endif
-        
-        {{-- Bottom border with rounded corners --}}
-        <div class="text-cyan">╰{{ str_repeat('─', $innerWidth) }}╯</div>
+        <div class="text-cyan">╰{{ str_repeat('─', $width) }}╯</div>
     </div>
 </div>

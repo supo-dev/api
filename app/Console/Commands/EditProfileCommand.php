@@ -7,12 +7,12 @@ namespace App\Console\Commands;
 use App\Actions\UpdateUser;
 use App\Models\User;
 use App\Rules\UserUsername;
+use App\Support\InlineFormHandler;
 use Illuminate\Console\Command;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Support\Facades\Validator;
 
 use function Laravel\Prompts\info;
-use function Laravel\Prompts\text;
-use function Laravel\Prompts\textarea;
 
 final class EditProfileCommand extends Command
 {
@@ -23,24 +23,46 @@ final class EditProfileCommand extends Command
 
     public function handle(#[CurrentUser] User $user, UpdateUser $action): void
     {
-        info('Edit your profile');
+        $form = new InlineFormHandler;
 
-        $username = text(
+        $form->addTextField(
+            name: 'username',
             label: 'Username',
-            placeholder: 'Enter your username',
             default: $user->username,
-            required: true,
-            validate: ['required', 'string', 'max:255', new UserUsername($user)],
+            placeholder: 'Enter your username',
+            maxLength: 255
         );
 
-        $bio = textarea(
+        $form->addTextareaField(
+            name: 'bio',
             label: 'Bio',
-            placeholder: 'Tell us about yourself...',
             default: $user->bio ?? '',
-            validate: ['nullable', 'string', 'max:500'],
+            placeholder: 'Tell us about yourself...',
+            maxLength: 500
         );
 
-        $action->handle($user, $username, $bio);
+        $values = $form->run('Edit your profile');
+
+        if ($values === null) {
+            info('Profile editing cancelled.');
+
+            return;
+        }
+
+        // Validate the input
+        $validator = Validator::make($values, [
+            'username' => ['required', 'string', 'max:255', new UserUsername($user)],
+            'bio' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            info('Validation failed: '.implode(', ', $errors));
+
+            return;
+        }
+
+        $action->handle($user, $values['username'], $values['bio']);
 
         info('Profile updated successfully!');
     }
